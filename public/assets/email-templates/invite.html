@@ -2,6 +2,7 @@
   <body>
     <h2>Welcome to Receevi!</h2>
     <p>Thank you for signing up. Please confirm your email to get started.</p>
-    <a href="{{ .ConfirmationURL }}&next=/update-password">Confirm your email</a>  
+    <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup&next=/update-password">Confirm your email</a>
   </body>
 </html>
+
