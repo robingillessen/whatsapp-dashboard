@@ -4,4 +4,5 @@
         "./supabase/functions"
     ],
     "deno.importMap": "./supabase/functions/import_map.json",
+    "postman.settings.dotenv-detection-notification-visibility": false,
 }
