@@ -21,7 +21,7 @@ export default function ForgotPasswordClientComponent() {
         if (!email) return; // Ensure email is not null
 
         const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'https://example.com/update-password',
+            redirectTo: 'https://whatsapp-dashboard-bice.vercel.app/update-password',
         });
 
         if (error) {
