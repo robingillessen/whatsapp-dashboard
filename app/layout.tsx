@@ -19,8 +19,10 @@ export default async function RootLayout({
   const supabase = createClient()
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  console.log('user', user)
   return (
     <html lang="en">
       <head>
@@ -31,7 +33,7 @@ export default async function RootLayout({
       <body>
         <NextTopLoader color="#000" />
         <SupabaseProvider supabaseUrl={process.env.SUPABASE_URL} supabaseAnonKey={process.env.SUPABASE_ANON_KEY}>
-          <SupabaseUserProvider user={session?.user}>
+          <SupabaseUserProvider user={user ?? undefined}>
             {children}
           </SupabaseUserProvider>
         </SupabaseProvider>

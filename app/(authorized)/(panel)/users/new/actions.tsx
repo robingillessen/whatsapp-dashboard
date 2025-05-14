@@ -19,11 +19,11 @@ export async function createUser(data: z.infer<typeof userSchema>) {
     // For this example, we'll just log the data and simulate a delay
     console.log('Creating user:', validatedData)
     const supabaseServer = createClient()
-    const {data: session, error: sessionGetError} = await supabaseServer.auth.getSession()
+    const {data: session, error: sessionGetError} = await supabaseServer.auth.getUser()
     if (sessionGetError) {
         throw sessionGetError
     }
-    const userRole = session.session?.user?.user_metadata?.custom_user_role
+    const userRole = session.user?.user_metadata?.custom_user_role
     if (userRole !== 'admin') {
         return { success: false, message: 'You are not authorized to create users' }
     }

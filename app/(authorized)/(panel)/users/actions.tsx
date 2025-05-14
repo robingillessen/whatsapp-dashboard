@@ -5,11 +5,11 @@ import { createClient } from '@/utils/supabase-server'
 
 export async function deleteUser(userId: string) {
     const supabaseServer = createClient()
-    const {data: session, error: sessionGetError} = await supabaseServer.auth.getSession()
+    const {data: session, error: sessionGetError} = await supabaseServer.auth.getUser()
     if (sessionGetError) {
         throw sessionGetError
     }
-    const userRole = session.session?.user?.user_metadata?.custom_user_role
+    const userRole = session.user?.user_metadata?.custom_user_role
     console.log('userRole', userRole)
     if (userRole !== 'admin') {
         return { success: false, message: 'You are not authorized to create users' }

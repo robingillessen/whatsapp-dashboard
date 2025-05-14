@@ -11,16 +11,17 @@ export default function SupabaseListener({ serverAccessToken }: { serverAccessTo
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.access_token !== serverAccessToken) {
-        router.refresh()
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || session?.access_token !== serverAccessToken) {
+        router.refresh();
       }
-    })
+    });
 
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [serverAccessToken, router, supabase])
+      subscription.unsubscribe();
+    };
+  }, [serverAccessToken, router, supabase]);
 
   return null
 }
