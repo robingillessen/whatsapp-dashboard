@@ -12,7 +12,7 @@ import { ReactNode, useCallback, useEffect } from "react";
 
 export default function PanelClient({ children }: { children: ReactNode }) {
     const activePath = usePathname();
-    const { user } = useSupabaseUser();
+    const { session } = useSupabaseUser();
     const userRole = useUserRole()
     const supabase = useSupabase()
     const router = useRouter()
@@ -24,11 +24,11 @@ export default function PanelClient({ children }: { children: ReactNode }) {
     }, [router, supabase])
     useEffect(() => {
         supabase.supabase.auth.getUser().then(res => {
-            if (res.data.user && res.data.user?.aud) {
-                supabase.supabase.realtime.setAuth(res.data.user.aud)
+            if (session?.access_token) {
+                supabase.supabase.realtime.setAuth(session.access_token)
             }
         })
-    }, [supabase])
+    }, [supabase, session])
 
     return (
         <div className="flex flex-col h-screen">
@@ -59,14 +59,14 @@ export default function PanelClient({ children }: { children: ReactNode }) {
                         <DropdownMenuTrigger asChild>
                             {/* <CircleUserRound size={32} className="cursor-pointer" /> */}
                             <button>
-                                <UserLetterIcon user={{ firstName: user?.user_metadata.first_name, lastName: user?.user_metadata.last_name }} className="cursor-pointer h-10 w-10" />
+                                <UserLetterIcon user={{ firstName: session?.user.user_metadata.first_name, lastName: session?.user.user_metadata.last_name }} className="cursor-pointer h-10 w-10" />
                             </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56">
                             <DropdownMenuLabel>
                                 <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none">{user?.user_metadata.first_name} {user?.user_metadata.last_name}</p>
-                                    <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                                    <p className="text-sm font-medium leading-none">{session?.user.user_metadata.first_name} {session?.user.user_metadata.last_name}</p>
+                                    <p className="text-xs leading-none text-muted-foreground">{session?.user.email}</p>
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />

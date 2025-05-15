@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { corsHeaders } from "../_shared/cors.ts";
 import { Broadcast, BroadcastContact } from "../bulk-send/types.ts";
 import { SupabaseClientType, createSupabaseClient } from "../_shared/client.ts";
-import { sendTemplateMessage, sendTemplateMessageDummy } from "./send-message.ts";
+import { sendTemplateMessage } from "./send-message.ts";
 import { PARALLEL_SEND_MESSAGE_COUNT } from "../_shared/constants.ts";
 import { Template } from "../setup/message_template.ts";
 
@@ -21,7 +21,7 @@ async function sendMessageAndUpdateMessageId(supabase: SupabaseClientType, broad
 
             const { error: errorUpdateBroadcastContact } = await supabase
                 .from('broadcast_contact')
-                .update({ processed_at: new Date(), wam_id: message_id })
+                .update({ processed_at: String(new Date()), wam_id: message_id })
                 .eq('id', contact.id)
             if (errorUpdateBroadcastContact) throw errorUpdateBroadcastContact
             const msgToPut: any = structuredClone(payload)
@@ -95,13 +95,13 @@ async function sendMessages(supabase: SupabaseClientType, broadcast: Broadcast, 
 async function startBatch(supabase: SupabaseClientType, broadcast: Broadcast, batchId: string, messageTemplate: Template) {
     const { error: errorStartBatch } = await supabase
         .from('broadcast_batch')
-        .update({ started_at: new Date() })
+        .update({ started_at: String(new Date()) })
         .eq('id', batchId)
     if (errorStartBatch) throw errorStartBatch
     await sendMessages(supabase, broadcast, batchId, messageTemplate)
     const { error: errorEndBatch } = await supabase
         .from('broadcast_batch')
-        .update({ ended_at: new Date(), status: "COMPLETED" })
+        .update({ ended_at: String(new Date()), status: "COMPLETED" })
         .eq('id', batchId)
     if (errorEndBatch) throw errorEndBatch
 }
