@@ -8,7 +8,6 @@ serve(async (req) => {
     const reqData = await req.json()
     const chatIds = reqData.chat_id
     for (const chatId of chatIds) {
-        console.log('chatId', chatId)
         const { count, error } = await supabase
             .from('messages')
             .select('*', { count:'exact', head: true })

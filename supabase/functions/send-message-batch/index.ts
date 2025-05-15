@@ -116,7 +116,6 @@ async function startNextBatch(supabase: SupabaseClientType, broadcast: Broadcast
         await startBatch(supabase, broadcast, batchId, messageTemplate)
         success = true;
     }
-    console.log('batchId', batchId)
     return success;
 }
 

@@ -30,7 +30,6 @@ function addDateToMessages(withoutDateArray: DBMessage[]): UIMessageModel[] {
 }
 
 export default function MessageListClient({ from, stateMessages, setMessages }: MessageListClientProps) {
-    console.log('stateMessages being rerendered again', stateMessages)
     const { supabase } = useSupabase()
     const [additionalMessagesLoading, setAdditionalMessagesLoading] = useState<boolean>(false)
     const [noMoreMessages, setNoMoreMessages] = useState<boolean>(false)
