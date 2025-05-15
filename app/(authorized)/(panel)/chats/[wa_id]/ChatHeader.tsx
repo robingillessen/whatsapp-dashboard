@@ -1,7 +1,6 @@
 'use client'
 
 import { useSupabase } from '@/components/supabase-provider'
-import { useUserRole } from '@/components/supabase-user-provider'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import UserLetterIcon from '@/components/users/UserLetterIcon'
@@ -9,11 +8,13 @@ import { Contact } from '@/types/contact'
 import { useCallback, useEffect, useState } from 'react'
 import { useAgents } from '../AgentContext'
 import BlankUser from '../BlankUser'
+import { useSupabaseSession } from '@/components/supabase-session-provider'
 
 export default function ChatHeader({ contact }: { contact: Contact | undefined }) {
     const agentState = useAgents()
     const { supabase } = useSupabase()
-    const userRole = useUserRole()
+    const { session } = useSupabaseSession()
+    const userRole = session?.user.user_metadata.custom_user_role
     const [roleAssigned, setRoleAssigned] = useState<string | null | undefined>(contact?.assigned_to || undefined)
     useEffect(() => {
         setRoleAssigned(contact?.assigned_to || undefined)

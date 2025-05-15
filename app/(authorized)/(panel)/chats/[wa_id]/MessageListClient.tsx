@@ -12,7 +12,7 @@ import ReceivedVideoMessageUI from "./ReceivedVideoMessageUI"
 import ReceivedDocumentMessageUI from "./ReceivedDocumentMessageUI"
 import { useSupabase } from "@/components/supabase-provider"
 import { UIMessageModel } from "@/types/Message"
-import { useSupabaseUser } from "@/components/supabase-user-provider"
+import { useSupabaseSession } from "@/components/supabase-session-provider"
 
 interface MessageListClientProps {
     from: string
@@ -36,7 +36,7 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
     const [additionalMessagesLoading, setAdditionalMessagesLoading] = useState<boolean>(false)
     const [noMoreMessages, setNoMoreMessages] = useState<boolean>(false)
     const [newMessageId, setNewMessageId] = useState<number | undefined>()
-    const { session } = useSupabaseUser()    
+    const { session } = useSupabaseSession()    
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const scrollToBottom = (bottom: number = 0) => {
         if (messagesEndRef.current) {

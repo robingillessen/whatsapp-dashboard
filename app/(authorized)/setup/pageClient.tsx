@@ -12,11 +12,11 @@ import { Loader } from 'lucide-react';
 import { CheckCircle2 } from 'lucide-react';
 import Link from "next/link";
 import constants from "@/lib/constants";
-import { useSupabaseUser } from "@/components/supabase-user-provider";
+import { useSupabaseSession } from "@/components/supabase-session-provider";
 
 export default function SetupFrontendClient({ pendingItems }: { pendingItems: AppSetup[] }) {
     const { supabase } = useSupabase()
-    const { session } = useSupabaseUser()
+    const { session } = useSupabaseSession()
     const [pendingItemsState, setPendingItems] = useState(pendingItems);
     const [isSetupCompleted, setSetupCompleted] = useState(pendingItems.length == 0)
     const [errorMessage, setErrorMessage] = useState<string>('');

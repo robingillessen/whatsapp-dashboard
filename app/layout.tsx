@@ -1,6 +1,6 @@
 import 'server-only'
 
-import SupabaseUserProvider from '@/components/supabase-user-provider'
+import SupabaseUserProvider from '@/components/supabase-session-provider'
 import { createClient } from '@/utils/supabase-server'
 import NextTopLoader from 'nextjs-toploader'
 import './globals.css'

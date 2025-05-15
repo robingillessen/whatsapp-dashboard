@@ -1,7 +1,7 @@
 'use client';
 
 import { useSupabase } from "@/components/supabase-provider";
-import { useSupabaseUser, useUserRole } from "@/components/supabase-user-provider";
+import { useSupabaseSession } from "@/components/supabase-session-provider";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import UserLetterIcon from "@/components/users/UserLetterIcon";
@@ -12,10 +12,10 @@ import { ReactNode, useCallback, useEffect } from "react";
 
 export default function PanelClient({ children }: { children: ReactNode }) {
     const activePath = usePathname();
-    const { session } = useSupabaseUser();
-    const userRole = useUserRole()
+    const { session } = useSupabaseSession();
     const supabase = useSupabase()
     const router = useRouter()
+    const userRole = session?.user.user_metadata.custom_user_role
     const logout = useCallback(() => {
         supabase.supabase.auth.signOut().then(() => {
             console.log("logout successful")

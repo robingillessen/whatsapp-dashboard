@@ -16,14 +16,14 @@ import { CircleAlertIcon } from "lucide-react";
 import { UPDATE_CURRENT_CONTACT, useCurrentContactDispatch } from "../CurrentContactContext";
 import { isLessThanADay } from "@/lib/time-utils";
 import { UIMessageModel } from "@/types/Message";
-import { useSupabaseUser } from "@/components/supabase-user-provider"
+import { useSupabaseSession } from "@/components/supabase-session-provider"
 
 export const revalidate = 0;
 
 export default function ContactChat({ params }: { params: { wa_id: string } }) {
   const { supabase } = useSupabase();
   const setCurrentContact = useCurrentContactDispatch();
-  const { session } = useSupabaseUser()
+  const { session } = useSupabaseSession()
   const [contact, setContact] = useState<Contact | undefined>();
   const [lastMessageReceivedAt, setLastMessageReceivedAt] = useState<Date | undefined>();
   const [isChatWindowOpen, setChatWindowOpen] = useState<boolean | undefined>();

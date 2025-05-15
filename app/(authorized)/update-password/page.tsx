@@ -1,7 +1,6 @@
 "use client";
 
 import { useSupabase } from "@/components/supabase-provider";
-import { useSupabaseUser } from "@/components/supabase-user-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

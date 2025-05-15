@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { DBTables } from "@/lib/enums/Tables"
-import { createClient } from "@/utils/supabase-browser"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ReactNode, useState } from "react"
 import { useForm } from "react-hook-form"
