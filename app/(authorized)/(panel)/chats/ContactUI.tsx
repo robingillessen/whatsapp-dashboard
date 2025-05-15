@@ -9,7 +9,10 @@ export default function ContactUI(props: { contact: ContactFE }) {
     const currentContact = useCurrentContact()
     const setCurrentContact = useCurrentContactDispatch()
     return (
-        <Link href={`/chats/${contact.wa_id}`} onClick={() => { setCurrentContact && setCurrentContact({ type: UPDATE_CURRENT_CONTACT, contact: contact }) }}>
+        <Link href={`/chats/${contact.wa_id}`} onClick={() => { setCurrentContact && setCurrentContact({ type: UPDATE_CURRENT_CONTACT, contact: {
+            ...contact,
+            unread_count: 0
+        } }) }}>
             <div className={cn("flex flex-row p-2 hover:bg-background-default-hover gap-2 cursor-pointer ", currentContact && currentContact.current?.wa_id === contact.wa_id ? "bg-background-default-hover" : "")}>
                 <div>
                     <BlankUser className="w-12 h-12" />
