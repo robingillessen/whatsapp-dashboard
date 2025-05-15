@@ -9,11 +9,9 @@ export default function ContactUI(props: { contact: ContactFE }) {
     const { contact } = props;
     const currentContact = useCurrentContact()
     const setCurrentContact = useCurrentContactDispatch()
-    const [localUnreadCount, setLocalUnreadCount] = useState<number>(contact.unread_count || 0)
 
     const handleClick = () => {
         setCurrentContact && setCurrentContact({ type: UPDATE_CURRENT_CONTACT, contact: { ...contact } })
-        setLocalUnreadCount(0)
     }
 
     return (
@@ -31,9 +29,9 @@ export default function ContactUI(props: { contact: ContactFE }) {
                     </div>
                     <div className="flex flex-col items-end">
                         {(() => {
-                            if (localUnreadCount && localUnreadCount > 0) {
+                            if (contact.unread_count && contact.unread_count > 0) {
                                 return (
-                                    <div className="bg-green-500 flex-grow-0 flex-shrink-0 p-2 h-6 w-6 text-white rounded-full text-xs font-bold flex items-center justify-center">{localUnreadCount}</div>
+                                    <div className="bg-green-500 flex-grow-0 flex-shrink-0 p-2 h-6 w-6 text-white rounded-full text-xs font-bold flex items-center justify-center">{contact.unread_count}</div>
                                 )
                             }
                         })()}

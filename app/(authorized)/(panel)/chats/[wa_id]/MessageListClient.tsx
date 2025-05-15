@@ -75,7 +75,6 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
 
     useEffect(() => {
         if (stateMessages && stateMessages[0]) {
-            console.log('stateMessages[0]', stateMessages[0])
             stateMessages[0].created_at
             const channel = supabase
                 .channel('message-update')
@@ -85,18 +84,19 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
                     table: DBTables.Messages,
                     filter: `created_at=gte.${stateMessages[0].created_at}`
                 }, payload => {
+                    console.log('payload.new', payload.new)
                     const messageIndexToUpdate = stateMessages.findIndex((m) => m.wam_id == payload.new.wam_id)
                     if (messageIndexToUpdate) {
                         const withDates = addDateToMessages([payload.new])
                         stateMessages[messageIndexToUpdate] = withDates[0]
                         setMessages([...stateMessages])
-                    }
+                    } 
                 })
                 .subscribe()
                 return () => { supabase.removeChannel(channel) }
-        } else {
-            console.log('stateMessages[0] is undefined')
-        }
+        
+           
+        } 
         return () => { }
     }, [supabase, stateMessages, setMessages])
 
@@ -121,7 +121,10 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
                     }).then().catch(error => console.error(error))
                 }
             })
-            .subscribe()
+            .subscribe((status) => {
+                console.log('Channel subscription status:', status)
+            })
+        console.log('Supabase channel object:', channel)
         return () => { supabase.removeChannel(channel) }
     }, [supabase, setMessages, stateMessages, from])
     useEffect(() => {

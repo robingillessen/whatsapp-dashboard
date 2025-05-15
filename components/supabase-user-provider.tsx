@@ -1,17 +1,17 @@
 'use client'
 
-import { User } from "@supabase/supabase-js"
+import { Session } from "@supabase/supabase-js"
 import { createContext, useContext } from "react"
 
 type SupabaseRoleContext = {
-    user: User | undefined
+    session: Session | undefined
 }
 
 const Context = createContext<SupabaseRoleContext | undefined>(undefined)
 
-export default function SupabaseUserProvider({ user, children }: {user: User | undefined, children: React.ReactNode }) {
+export default function SupabaseUserProvider({ session, children }: {session: Session | undefined, children: React.ReactNode }) {
     return (
-        <Context.Provider value={{ user }}>
+        <Context.Provider value={{ session }}>
             {children}
         </Context.Provider>
     )
@@ -26,6 +26,6 @@ export function useSupabaseUser() {
 }
 
 export function useUserRole() {
-    const { user } = useSupabaseUser()
-    return user?.user_metadata?.custom_user_role
+    const { session } = useSupabaseUser()
+    return session?.user.user_metadata?.custom_user_role
 }
