@@ -12,9 +12,11 @@ import { Loader } from 'lucide-react';
 import { CheckCircle2 } from 'lucide-react';
 import Link from "next/link";
 import constants from "@/lib/constants";
+import { useSupabaseUser } from "@/components/supabase-user-provider";
 
 export default function SetupFrontendClient({ pendingItems }: { pendingItems: AppSetup[] }) {
     const { supabase } = useSupabase()
+    const { session } = useSupabaseUser()
     const [pendingItemsState, setPendingItems] = useState(pendingItems);
     const [isSetupCompleted, setSetupCompleted] = useState(pendingItems.length == 0)
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -30,6 +32,7 @@ export default function SetupFrontendClient({ pendingItems }: { pendingItems: Ap
     }
 
     useEffect(() => {
+        supabase.realtime.setAuth(session?.access_token ?? null)
         const channel = supabase
             .channel('setup-page')
             .on<AppSetup>('postgres_changes', { event: '*', schema: 'public', table: DBTables.Setup }, payload => {

@@ -1,7 +1,8 @@
 'use client'
 
 import { Session } from "@supabase/supabase-js"
-import { createContext, useContext } from "react"
+import { createContext, useContext, useEffect } from "react"
+import { useSupabase } from "./supabase-provider"
 
 type SupabaseRoleContext = {
     session: Session | undefined
@@ -10,6 +11,8 @@ type SupabaseRoleContext = {
 const Context = createContext<SupabaseRoleContext | undefined>(undefined)
 
 export default function SupabaseUserProvider({ session, children }: {session: Session | undefined, children: React.ReactNode }) {
+    const { supabase } = useSupabase();
+   
     return (
         <Context.Provider value={{ session }}>
             {children}

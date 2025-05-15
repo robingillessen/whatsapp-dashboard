@@ -16,13 +16,14 @@ import { CircleAlertIcon } from "lucide-react";
 import { UPDATE_CURRENT_CONTACT, useCurrentContactDispatch } from "../CurrentContactContext";
 import { isLessThanADay } from "@/lib/time-utils";
 import { UIMessageModel } from "@/types/Message";
+import { useSupabaseUser } from "@/components/supabase-user-provider"
 
 export const revalidate = 0;
 
 export default function ContactChat({ params }: { params: { wa_id: string } }) {
   const { supabase } = useSupabase();
   const setCurrentContact = useCurrentContactDispatch();
-
+  const { session } = useSupabaseUser()
   const [contact, setContact] = useState<Contact | undefined>();
   const [lastMessageReceivedAt, setLastMessageReceivedAt] = useState<Date | undefined>();
   const [isChatWindowOpen, setChatWindowOpen] = useState<boolean | undefined>();
@@ -67,6 +68,7 @@ export default function ContactChat({ params }: { params: { wa_id: string } }) {
   }, [lastMessageReceivedAt]);
 
   useEffect(() => {
+    supabase.realtime.setAuth(session?.access_token ?? null)
     const channel = supabase
       .channel('last-message-received-channel')
       .on<Contact>('postgres_changes', {

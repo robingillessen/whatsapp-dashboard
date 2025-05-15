@@ -12,6 +12,7 @@ import ReceivedVideoMessageUI from "./ReceivedVideoMessageUI"
 import ReceivedDocumentMessageUI from "./ReceivedDocumentMessageUI"
 import { useSupabase } from "@/components/supabase-provider"
 import { UIMessageModel } from "@/types/Message"
+import { useSupabaseUser } from "@/components/supabase-user-provider"
 
 interface MessageListClientProps {
     from: string
@@ -34,6 +35,7 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
     const [additionalMessagesLoading, setAdditionalMessagesLoading] = useState<boolean>(false)
     const [noMoreMessages, setNoMoreMessages] = useState<boolean>(false)
     const [newMessageId, setNewMessageId] = useState<number | undefined>()
+    const { session } = useSupabaseUser()    
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const scrollToBottom = (bottom: number = 0) => {
         if (messagesEndRef.current) {
@@ -75,14 +77,14 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
 
     useEffect(() => {
         if (stateMessages && stateMessages[0]) {
-            stateMessages[0].created_at
+            supabase.realtime.setAuth(session?.access_token ?? null)
             const channel = supabase
                 .channel('message-update')
                 .on<DBMessage>('postgres_changes', {
                     event: 'UPDATE',
                     schema: 'public',
                     table: DBTables.Messages,
-                    filter: `created_at=gte.${stateMessages[0].created_at}`
+                    // filter: `created_at=gte.${stateMessages[0].created_at}`
                 }, payload => {
                     console.log('payload.new', payload.new)
                     const messageIndexToUpdate = stateMessages.findIndex((m) => m.wam_id == payload.new.wam_id)
@@ -101,6 +103,7 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
     }, [supabase, stateMessages, setMessages])
 
     useEffect(() => {
+        supabase.realtime.setAuth(session?.access_token ?? null)
         const channel = supabase
             .channel('message-insert')
             .on<DBMessage>('postgres_changes', {
