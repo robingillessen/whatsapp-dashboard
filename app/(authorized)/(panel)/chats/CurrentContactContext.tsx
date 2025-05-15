@@ -15,6 +15,7 @@ type Action = {
 export const UPDATE_CURRENT_CONTACT = 'UPDATE_CURRENT_CONTACT'
 
 const reducer: Reducer<ContactState, Action> = (state, action) => {
+    console.log('action', action)
     switch (action.type) {
         case UPDATE_CURRENT_CONTACT:
             return { current: action.contact }

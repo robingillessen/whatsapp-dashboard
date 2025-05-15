@@ -3,16 +3,21 @@ import { ContactFE } from "@/types/contact";
 import BlankUser from "./BlankUser";
 import { UPDATE_CURRENT_CONTACT, useCurrentContact, useCurrentContactDispatch } from "./CurrentContactContext";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 export default function ContactUI(props: { contact: ContactFE }) {
     const { contact } = props;
     const currentContact = useCurrentContact()
     const setCurrentContact = useCurrentContactDispatch()
+    const [localUnreadCount, setLocalUnreadCount] = useState<number>(contact.unread_count || 0)
+
+    const handleClick = () => {
+        setCurrentContact && setCurrentContact({ type: UPDATE_CURRENT_CONTACT, contact: { ...contact } })
+        setLocalUnreadCount(0)
+    }
+
     return (
-        <Link href={`/chats/${contact.wa_id}`} onClick={() => { setCurrentContact && setCurrentContact({ type: UPDATE_CURRENT_CONTACT, contact: {
-            ...contact,
-            unread_count: 0
-        } }) }}>
+        <Link href={`/chats/${contact.wa_id}`} onClick={handleClick}>
             <div className={cn("flex flex-row p-2 hover:bg-background-default-hover gap-2 cursor-pointer ", currentContact && currentContact.current?.wa_id === contact.wa_id ? "bg-background-default-hover" : "")}>
                 <div>
                     <BlankUser className="w-12 h-12" />
@@ -26,9 +31,9 @@ export default function ContactUI(props: { contact: ContactFE }) {
                     </div>
                     <div className="flex flex-col items-end">
                         {(() => {
-                            if (contact.unread_count && contact.unread_count > 0) {
+                            if (localUnreadCount && localUnreadCount > 0) {
                                 return (
-                                    <div className="bg-green-500 flex-grow-0 flex-shrink-0 p-2 h-6 w-6 text-white rounded-full text-xs font-bold flex items-center justify-center">{contact.unread_count}</div>
+                                    <div className="bg-green-500 flex-grow-0 flex-shrink-0 p-2 h-6 w-6 text-white rounded-full text-xs font-bold flex items-center justify-center">{localUnreadCount}</div>
                                 )
                             }
                         })()}
