@@ -11,9 +11,12 @@ import { markAsRead } from "./markAsRead"
 import ReceivedVideoMessageUI from "./ReceivedVideoMessageUI"
 import ReceivedDocumentMessageUI from "./ReceivedDocumentMessageUI"
 import { useSupabase } from "@/components/supabase-provider"
+import { UIMessageModel } from "@/types/Message"
 
-type UIMessageModel = DBMessage & {
-    msgDate: string
+interface MessageListClientProps {
+    from: string
+    stateMessages: UIMessageModel[]
+    setMessages: Dispatch<SetStateAction<UIMessageModel[]>>
 }
 
 function addDateToMessages(withoutDateArray: DBMessage[]): UIMessageModel[] {
@@ -26,9 +29,8 @@ function addDateToMessages(withoutDateArray: DBMessage[]): UIMessageModel[] {
     })
 }
 
-export default function MessageListClient({ from }: { from: string }) {
+export default function MessageListClient({ from, stateMessages, setMessages }: MessageListClientProps) {
     const { supabase } = useSupabase()
-    const [stateMessages, setMessages] = useState<UIMessageModel[]>(addDateToMessages([]))
     const [additionalMessagesLoading, setAdditionalMessagesLoading] = useState<boolean>(false)
     const [noMoreMessages, setNoMoreMessages] = useState<boolean>(false)
     const [newMessageId, setNewMessageId] = useState<number | undefined>()
@@ -38,6 +40,10 @@ export default function MessageListClient({ from }: { from: string }) {
             messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight - bottom;
         }
     }
+
+    useEffect(() => {
+        scrollToBottom()
+    }, [stateMessages])
 
     async function fetchMessages(before: string | null = null) {
         const query = supabase
@@ -213,7 +219,7 @@ export default function MessageListClient({ from }: { from: string }) {
                                         }
                                         <span className="invisible">ww:ww wm</span>
                                     </div>
-                                    <span className="text-xs pb-2 pe-2 text-bubble-meta absolute bottom-0 end-0">{messageDateTime.toLocaleTimeString().toLowerCase()}</span>
+                                    <span className="text-xs pb-2 pe-2 text-bubble-meta absolute bottom-0 end-0">{message.isPending ? 'Sending...' : messageDateTime.toLocaleTimeString().toLowerCase()}</span>
                                 </div>
                             </TailWrapper>
                         </div>

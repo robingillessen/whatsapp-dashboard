@@ -15,17 +15,32 @@ import TWLoader from "@/components/TWLoader";
 import { CircleAlertIcon } from "lucide-react";
 import { UPDATE_CURRENT_CONTACT, useCurrentContactDispatch } from "../CurrentContactContext";
 import { isLessThanADay } from "@/lib/time-utils";
+import { UIMessageModel } from "@/types/Message";
+
+
+
+const addDateToMessages = (messages: DBMessage[]): UIMessageModel[] => {
+  return messages.map(m => ({
+    ...m,
+    msgDate: new Date(m.created_at).toLocaleDateString(),
+  }));
+};
 
 export const revalidate = 0
 
 export default function ContactChat({ params }: { params: { wa_id: string } }) {
     const [isChatWindowOpen, setChatWindowOpen] = useState<boolean | undefined>()
     const [lastMessageReceivedAt, setLastMessageReceivedAt] = useState<Date | undefined>()
+    const [messages, setMessages] = useState<UIMessageModel[]>([]);
     const { supabase } = useSupabase()
     const [contactRepository] = useState(() => ContactBrowserFactory.getInstance(supabase))
     const [messageTemplateSending, setMessageTemplateSending] = useState<boolean>(false);
     const [contact, setContact] = useState<Contact | undefined>();
     const setCurrentContact = useCurrentContactDispatch()
+
+    const addOptimisticMessage = (msg: UIMessageModel) => {
+        setMessages(prev => [...prev, msg]);
+      };
 
     useEffect(() => {
         contactRepository.getContactById(params.wa_id).then((contact) => {
@@ -95,11 +110,12 @@ export default function ContactChat({ params }: { params: { wa_id: string } }) {
                             return (
                                 <>
                                     <ChatHeader contact={contact} />
-                                    <MessageListClient from={params.wa_id} />
+                                    <MessageListClient from={params.wa_id} stateMessages={messages} setMessages={setMessages}/>
+
                                     {(() => {
                                         if (typeof isChatWindowOpen !== 'undefined' && typeof contact !== 'undefined') {
                                             if (isChatWindowOpen) {
-                                                return <SendMessageWrapper waId={params.wa_id} />
+                                                return <SendMessageWrapper waId={params.wa_id} addOptimisticMessage={addOptimisticMessage} setMessages={setMessages}/>
                                             } else {
                                                 return (
                                                     <div className="p-4 bg-white flex flex-row gap-4 items-center">

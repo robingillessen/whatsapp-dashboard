@@ -32,4 +32,6 @@ export type ImageMessage = MessageJson & {
 
 export type UIMessageModel = DBMessage & {
     msgDate: string
+    failed?: boolean
+    isPending?: boolean
 }
