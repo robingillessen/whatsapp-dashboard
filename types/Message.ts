@@ -29,3 +29,7 @@ export type TemplateMessage = MessageJson & {
 export type ImageMessage = MessageJson & {
     image: ImageMessageBody,
 }
+
+export type UIMessageModel = DBMessage & {
+    msgDate: string
+}
