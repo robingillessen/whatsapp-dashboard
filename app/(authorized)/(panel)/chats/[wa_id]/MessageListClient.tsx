@@ -75,6 +75,7 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
 
     useEffect(() => {
         if (stateMessages && stateMessages[0]) {
+            console.log('stateMessages[0]', stateMessages[0])
             stateMessages[0].created_at
             const channel = supabase
                 .channel('message-update')
@@ -93,8 +94,10 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
                 })
                 .subscribe()
                 return () => { supabase.removeChannel(channel) }
+        } else {
+            console.log('stateMessages[0] is undefined')
         }
-        return () => {}
+        return () => { }
     }, [supabase, stateMessages, setMessages])
 
     useEffect(() => {
@@ -106,7 +109,8 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
                 table: DBTables.Messages,
                 filter: `chat_id=eq.${from}`
             }, payload => {
-                setMessages([...stateMessages, ...addDateToMessages([payload.new])])
+                console.log('payload.new', payload.new)
+                setMessages(prev => [...prev, ...addDateToMessages([payload.new])])
                 setTimeout(() => {
                     scrollToBottom()
                 }, 100)
