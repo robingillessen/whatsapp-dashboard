@@ -41,20 +41,15 @@ export default function ChatContactsClient() {
             </Tabs>
 
             <div className="flex flex-col h-full overflow-y-auto" ref={chatListRef} onScroll={onDivScroll}>
-         
-                {isLoading && contacts.length === 0 && (
+                {isLoading && contacts.length === 0 ? (
                     <div className="flex flex-1 justify-center items-center w-full h-full">
                         <LoaderCircleIcon className="animate-spin w-6 h-6 text-muted-foreground" />
                     </div>
-                )}
-
-           
-                {contacts.length > 0 && contacts.map(contact => (
-                    <ContactUI key={contact.wa_id} contact={contact} />
-                ))}
-
-             
-                {!isLoading && contacts.length === 0 && (
+                ) : contacts.length > 0 ? (
+                    contacts.map(contact => (
+                        <ContactUI key={contact.wa_id} contact={contact} />
+                    ))
+                ) : (
                     <div className="p-4 text-center text-sm text-muted-foreground">
                         {emptyStateText}
                     </div>

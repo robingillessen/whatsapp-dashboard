@@ -77,63 +77,6 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
     }
 
     useEffect(() => {
-        if (stateMessages && stateMessages[0]) {
-            supabase.realtime.setAuth(session?.access_token ?? null)
-            const channel = supabase
-                .channel('message-update')
-                .on<DBMessage>('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: DBTables.Messages,
-                    // filter: `created_at=gte.${stateMessages[0].created_at}`
-                }, payload => {
-                    console.log('payload.new', payload.new)
-                    const messageIndexToUpdate = stateMessages.findIndex((m) => m.wam_id == payload.new.wam_id)
-                    if (messageIndexToUpdate) {
-                        const withDates = addDateToMessages([payload.new])
-                        stateMessages[messageIndexToUpdate] = withDates[0]
-                        setMessages([...stateMessages])
-                    } 
-                })
-                .subscribe((status) => {
-                    console.log('Channel subscription status:', status)
-                })
-                return () => { supabase.removeChannel(channel) }
-        
-           
-        } 
-        return () => { }
-    }, [supabase, stateMessages, setMessages])
-
-    useEffect(() => {
-        supabase.realtime.setAuth(session?.access_token ?? null)
-        const channel = supabase
-            .channel('message-insert')
-            .on<DBMessage>('postgres_changes', {
-                event: 'INSERT',
-                schema: 'public',
-                table: DBTables.Messages,
-                filter: `chat_id=eq.${from}`
-            }, payload => {
-                console.log('payload.new', payload.new)
-                setMessages(prev => [...prev, ...addDateToMessages([payload.new])])
-                setTimeout(() => {
-                    scrollToBottom()
-                }, 100)
-                if (payload.new.is_received && payload.new.read_by_user_at === null) {
-                    markAsRead({
-                        messageIds: [payload.new.id],
-                        chatId: from
-                    }).then().catch(error => console.error(error))
-                }
-            })
-            .subscribe((status) => {
-                console.log('Channel subscription status:', status)
-            })
-        console.log('Supabase channel object:', channel)
-        return () => { supabase.removeChannel(channel) }
-    }, [supabase, setMessages, stateMessages, from])
-    useEffect(() => {
         (async () => {
             const messages = await fetchMessages()
             markAsReadUnreadMessages(messages)
@@ -157,6 +100,55 @@ export default function MessageListClient({ from, stateMessages, setMessages }: 
             }, 100)
         })()
     }, [supabase, setMessages, from])
+
+    useEffect(() => {
+        supabase.realtime.setAuth(session?.access_token ?? null)
+        const channel = supabase.channel(`message-events-${from}`)
+
+        channel
+            .on<DBMessage>('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: DBTables.Messages,
+                filter: `chat_id=eq.${from}`
+            }, payload => {
+                console.log('payload.new (INSERT)', payload.new)
+                setMessages(prev => [...prev, ...addDateToMessages([payload.new])])
+                setTimeout(() => {
+                    scrollToBottom()
+                }, 100)
+                if (payload.new.is_received && payload.new.read_by_user_at === null) {
+                    markAsRead({
+                        messageIds: [payload.new.id],
+                        chatId: from
+                    }).then().catch(error => console.error(error))
+                }
+            })
+            .on<DBMessage>('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: DBTables.Messages
+            }, payload => {
+                console.log('payload.new (UPDATE)', payload.new)
+                setMessages(prev => {
+                    const messageIndexToUpdate = prev.findIndex((m) => m.wam_id == payload.new.wam_id)
+                    if (messageIndexToUpdate !== -1) {
+                        const withDates = addDateToMessages([payload.new])
+                        const updated = [...prev]
+                        updated[messageIndexToUpdate] = withDates[0]
+                        return updated
+                    }
+                    return prev
+                })
+            })
+            .subscribe((status) => {
+                console.log('Channel subscription status:', status)
+            })
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+    }, [supabase, from, session?.access_token, setMessages])
 
     async function loadAdditionalMessages() {
         if (stateMessages.length > 0 && stateMessages[0].created_at && messagesEndRef.current) {

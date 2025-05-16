@@ -30,7 +30,7 @@ function addTimeSince(data: Contact[]): ContactFE[] {
 }
 
 export function useContactList(search: string, active: boolean) {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [contacts, setContacts] = useState<ContactFE[]>([]);
     const { supabase } = useSupabase()
     const fetchedUntil = useRef<string | null>(null);
